@@ -214,6 +214,18 @@ struct ChalkGeometry {
                 labels.append(Label(text: shape.text, at: CGPoint(x: v.x + cos(mid) * (r + 4.5), y: v.y + sin(mid) * (r + 4.5)),
                                     size: labelSize, usesShapeColor: true))
             }
+        case .path?:
+            stroke = SVGPathParser.path(from: shape.d)
+            guard !stroke.isEmpty else { return }
+            fill = stroke
+            let box = stroke.boundingRect
+            // 長い線ほどゆっくり引く
+            drawDuration = min(0.5 + Double(box.width + box.height) / 80, 1.4)
+            if !shape.text.isEmpty {
+                // ラベルは points の 1 点か、形のすぐ下に書く
+                let at = points.first ?? CGPoint(x: box.midX, y: box.maxY + 3)
+                labels.append(Label(text: shape.text, at: at, size: labelSize, usesShapeColor: false))
+            }
         case .text?:
             guard let p = points.first, !shape.text.isEmpty else { return }
             labels.append(Label(text: shape.text, at: p, size: 3.6 * CGFloat(shape.scale), usesShapeColor: true))

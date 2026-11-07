@@ -84,7 +84,7 @@ struct ChalkDrawingTests {
 
     @Test(arguments: ChalkDrawing.Kind.allCases)
     func どの図形も線か文字が出る(_ kind: ChalkDrawing.Kind) {
-        let shape = ChalkDrawing.Shape(kind: kind, points: [[20, 20], [60, 20], [40, 50]], radius: 8, text: "あ", stamp: .flask)
+        let shape = ChalkDrawing.Shape(kind: kind, points: [[20, 20], [60, 20], [40, 50]], radius: 8, text: "あ", stamp: .flask, d: "M10 10 L30 30")
         let geometry = ChalkGeometry(shape: shape)
         #expect(!geometry.stroke.isEmpty || !geometry.labels.isEmpty)
     }
