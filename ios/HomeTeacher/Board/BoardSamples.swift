@@ -110,6 +110,23 @@ enum BoardSamples {
           {"kind":"text","text":"？地方","points":[[10,66]],"color":"pink","step":3},
           {"kind":"arrow","points":[[28,55],[68,17]],"color":"blue","dashed":true,"text":"どっちの方位？","step":3}]}}
         """),
+        ("drawing_fish", """
+        {"title":"メダカのからだ","component":{"type":"chalk_drawing","shapes":[
+          {"kind":"path","d":"M12 36 Q30 20 62 30 L74 24 Q78 36 74 48 L62 42 Q30 50 12 36 Z","step":1},
+          {"kind":"circle","points":[[20,33]],"radius":1.6,"fill":true,"step":1},
+          {"kind":"path","d":"M44 26 L50 18 L56 19 L54 28","color":"yellow","text":"せびれ","points":[[52,13]],"step":2},
+          {"kind":"path","d":"M36 44 L40 52 L60 50 L58 41","color":"pink","text":"しりびれ","points":[[48,57]],"step":2},
+          {"kind":"path","d":"M74 24 Q86 36 74 48","dashed":true,"text":"おびれ","points":[[87,36]],"step":2},
+          {"kind":"text","text":"おすとめすはどこがちがう？","points":[[50,66]],"color":"yellow","step":3}]}}
+        """),
+        ("drawing_flower", """
+        {"title":"花のつくり","component":{"type":"chalk_drawing","shapes":[
+          {"kind":"path","d":"M50 68 C50 60 49 52 50 46","color":"blue","step":1},
+          {"kind":"path","d":"M50 56 Q38 44 28 50 Q40 60 50 56 Z","fill":true,"color":"blue","text":"葉","points":[[24,44]],"step":1},
+          {"kind":"path","d":"M50 20 A5 9 0 1 1 50 2 A5 9 0 1 1 50 20 Z M54 24 A9 5 0 1 1 72 24 A9 5 0 1 1 54 24 Z M50 28 A5 9 0 1 1 50 46 A5 9 0 1 1 50 28 Z M46 24 A9 5 0 1 1 28 24 A9 5 0 1 1 46 24 Z","color":"pink","fill":true,"text":"花びら","points":[[80,12]],"step":2},
+          {"kind":"circle","points":[[50,24]],"radius":3.5,"color":"yellow","fill":true,"step":3},
+          {"kind":"text","text":"まん中にあるのは？","points":[[80,34]],"color":"yellow","step":3}]}}
+        """),
         ("drawing_geometry", """
         {"title":"三角形の角の大きさ","component":{"type":"chalk_drawing","shapes":[
           {"kind":"polygon","points":[[15,60],[85,60],[38,12]],"step":1},

@@ -27,9 +27,9 @@ export function findLeaks(reply, forbidden = []) {
   });
 }
 
-// 自由に描く図（chalk_drawing）の図形が持つ、位置や大きさの数を取り除く。座標の 48 は答えの 48 ではない。
+// 自由に描く図（chalk_drawing）の図形が持つ、位置や大きさの数（パスの d も）を取り除く。座標の 48 は答えの 48 ではない。
 // 図の文字（text）と、ほかの部品の数は残す。部品が文字列の JSON で返ることがある。読めなければそのまま返す
-const DRAWING_NUMBER_KEYS = new Set(["points", "radius", "size", "step"]);
+const DRAWING_NUMBER_KEYS = new Set(["points", "radius", "size", "step", "d"]);
 
 function dropDrawingNumbers(value, inShapes = false) {
   if (typeof value === "string") {

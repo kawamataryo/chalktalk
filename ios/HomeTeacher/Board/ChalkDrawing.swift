@@ -29,9 +29,11 @@ struct ChalkDrawing: BoardComponentModel {
         var fill: Bool
         /// 何番目に見せるか（1 から。0 なら 1）。同じ番号はまとめて出る
         var step: Int
+        /// path の形（SVG のパスの d。黒板の座標で書く。#173）
+        var d: String
 
         init(kind: Kind, points: [[Double]] = [], radius: Double = 0, text: String = "", stamp: Stamp? = nil,
-             size: Double = 0, color: String = "white", dashed: Bool = false, fill: Bool = false, step: Int = 1) {
+             size: Double = 0, color: String = "white", dashed: Bool = false, fill: Bool = false, step: Int = 1, d: String = "") {
             self.kind = kind.rawValue
             self.points = points
             self.radius = radius
@@ -42,6 +44,27 @@ struct ChalkDrawing: BoardComponentModel {
             self.dashed = dashed
             self.fill = fill
             self.step = step
+            self.d = d
+        }
+
+        enum CodingKeys: String, CodingKey {
+            case kind, points, radius, text, stamp, size, color, dashed, fill, step, d
+        }
+
+        /// d は path でしか書かないので、ないときは空にする（前に保存した図・テストの JSON にもない）
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            kind = try c.decode(String.self, forKey: .kind)
+            points = try c.decode([[Double]].self, forKey: .points)
+            radius = try c.decode(Double.self, forKey: .radius)
+            text = try c.decode(String.self, forKey: .text)
+            stamp = try c.decode(String.self, forKey: .stamp)
+            size = try c.decode(Double.self, forKey: .size)
+            color = try c.decode(String.self, forKey: .color)
+            dashed = try c.decode(Bool.self, forKey: .dashed)
+            fill = try c.decode(Bool.self, forKey: .fill)
+            step = try c.decode(Int.self, forKey: .step)
+            d = try c.decodeIfPresent(String.self, forKey: .d) ?? ""
         }
 
         var parsedKind: Kind? { Kind(rawValue: kind) }
@@ -64,6 +87,8 @@ struct ChalkDrawing: BoardComponentModel {
         case rect, circle, polygon, polyline, curve, text, stamp
         /// 角の印（points: 頂点・一方の辺の点・もう一方の辺の点）
         case angle
+        /// SVG のパス（d）で描く自由な形。スタンプにない生き物・植物・からだ・ものの形（#173）
+        case path
     }
 
     /// 用意してある絵。中心（points の 1 点）に、高さ 16（size 倍）で描く
@@ -120,7 +145,7 @@ struct ChalkDrawing: BoardComponentModel {
 
     static let kind = BoardComponent.Kind.chalkDrawing
     static var usage: String {
-        "自由に描く黒板。決まった部品で表せない図（理科の実験道具・回路・てこ・植物、地図・方位、図形）を、線・図形・文字・スタンプで描く。"
+        "自由に描く黒板。決まった部品で表せない図（理科の実験道具・回路・てこ・生き物・植物・からだのつくり、地図・方位、図形）を、線・図形・文字・スタンプ・パスで描く。"
             + "座標は よこ0〜100・たて0〜70（左上が0,0、下へ行くほど y が大きい）。図形は6〜15個まで。kind と points のほかは使うときだけ書く"
     }
 
@@ -139,6 +164,7 @@ struct ChalkDrawing: BoardComponentModel {
             ("dashed", Schema.boolean("点線にする（補助線・見えない線・動いたあと）")),
             ("fill", Schema.boolean("中をうすくぬる。ビーカーなど入れ物のスタンプなら液体を入れる")),
             ("step", Schema.integer("何番目に見せるか（1から）。話す順に番号をふると、1つずつ見せられる")),
+            ("d", Schema.string("kind が path のときの形。SVG のパスの d（M・L・H・V・C・S・Q・T・A・Z）を黒板の座標で書く。例：葉 \"M20 40 Q35 20 55 40 Q35 58 20 40 Z\"。1本は短く（コマンド20個くらいまで）。points は空か、ラベルを書く1点")),
         // kind と points のほかは、使うときだけ書く（全部を必須にすると毎回すべて書き、会話の返事の上限に近づいた。#107）
         ], required: ["kind", "points"]), description: "描く図形（話す順に並べる）。kind と points のほかは使うときだけ書く"))]
     }

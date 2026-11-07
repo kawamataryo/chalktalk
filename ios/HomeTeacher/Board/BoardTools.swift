@@ -211,7 +211,7 @@ enum BoardTools {
     static let notice = "（図をうまく出せなかったよ）"
 
     /// 部品の種類や ID のような、子どもに見せても意味のない値は拾わない。
-    private static let ignoredKeys: Set<String> = ["type", "image_id", "svg", "kind", "stamp", "color"]
+    private static let ignoredKeys: Set<String> = ["type", "image_id", "svg", "kind", "stamp", "color", "d"]
 
     private static func priority(_ key: String) -> Int {
         ["title", "theme", "name", "heading"].firstIndex(of: key) ?? 99

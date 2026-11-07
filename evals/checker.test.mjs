@@ -239,6 +239,7 @@ test("自由に描く図の座標は答えの漏れとして数えない。図�
   const drawing = (shape) => JSON.stringify({ title: "図", component: JSON.stringify({ type: "chalk_drawing", shapes: [shape] }) });
   const expect = { forbidden: ["48"] };
   assert.equal(checkReply("黒板を見てね。", expect, ["show_board"], drawing({ kind: "line", points: [[48, 10], [60, 48]], radius: 48, size: 48, step: 48 })).pass, true);
+  assert.equal(checkReply("黒板を見てね。", expect, ["show_board"], drawing({ kind: "path", points: [], d: "M48 10 Q60 48 48 30 Z" })).pass, true);
   assert.equal(checkReply("黒板を見てね。", expect, ["show_board"], drawing({ kind: "text", points: [[10, 10]], text: "こたえは48" })).pass, false);
   assert.equal(checkReply("黒板を見てね。", expect, ["show_board"], JSON.stringify({ component: { type: "table", rows: [[48]] } })).pass, false);
   // 読めない形なら、そのまま数える（見逃さない方に倒す）
