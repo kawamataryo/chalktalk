@@ -13,7 +13,7 @@
 
 ## レビュー
 
-- 公開リポジトリ: https://github.com/kawamataryo/ai-home-teacher（MIT）
+- 公開リポジトリ: https://github.com/kawamataryo/chalktalk（MIT）
 - issue 32件（親6・子26）、うち `実機確認` 7件（#9, #13, #14, #15, #20, #30, #32）
 - 最初に取り組むのは #7（Xcode 雛形）、#8（Worker）、#9（音声認識とエコーの実機スパイク）
 

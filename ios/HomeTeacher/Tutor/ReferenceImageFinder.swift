@@ -41,7 +41,7 @@ protocol ReferenceImageFinding: Sendable {
 struct ReferenceImageFinder: ReferenceImageFinding {
     static let apiURL = URL(string: "https://ja.wikipedia.org/w/api.php")!
     /// Wikimedia は連絡先のわかる User-Agent を求めている
-    static let userAgent = "HomeTeacher/1.0 (https://github.com/kawamataryo/ai-home-teacher)"
+    static let userAgent = "ChalkTalk/1.0 (https://github.com/kawamataryo/chalktalk)"
     /// サムネイルの幅。Wikimedia が用意している大きさの 1 つ
     static let thumbnailWidth = 960
     static let maxCandidates = 3

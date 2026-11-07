@@ -193,7 +193,7 @@ struct PermissionNotice: Equatable, Sendable {
         let effect = canTalk
             ? "カメラを使う撮影（「これ見て」）と見守りはお休みします。声の会話はできます。"
             : "声で話しかけても聞き取れません。ボタンだけで動きます。"
-        return "\(names)が許可されていません。\(effect)設定アプリ > アプリ > AI家庭教師 で許可してください。"
+        return "\(names)が許可されていません。\(effect)設定アプリ > アプリ > ChalkTalk で許可してください。"
     }
 
     static func label(_ permission: AppPermission) -> String {

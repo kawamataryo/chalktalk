@@ -27,7 +27,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.kawamataryo.HomeTeacher
         TARGETED_DEVICE_FAMILY: "1,2"
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: "AI家庭教師"
+        INFOPLIST_KEY_CFBundleDisplayName: "ChalkTalk"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
@@ -35,7 +35,7 @@ targets:
         INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "話した言葉を文字にするために音声認識を使います。"
         INFOPLIST_KEY_NSCameraUsageDescription: "問題やノートを先生に見せるためと、勉強中の見守り（手の動きと顔があるかだけを iPad の中で見ます。映像は送らず保存もしません）にカメラを使います。"
         INFOPLIST_FILE: HomeTeacher/Resources/Info.plist
-        # アイコンの元は avatar/build_icon.py（Blender でレンダリング）
+        # アイコンの元は avatar/build_chalktalk_icon.py（Blender でレンダリング。黒板とチョークの吹き出し）
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_STYLE: Automatic
   HomeTeacherTests:
