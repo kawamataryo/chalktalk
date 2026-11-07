@@ -42,7 +42,7 @@
 
 ## 開発の進め方
 
-- リポジトリ `kawamataryo/ai-home-teacher` を公開、MIT ライセンス
+- リポジトリ `kawamataryo/chalktalk`（はじめは `ai-home-teacher`。名前を ChalkTalk に決めて改名）を公開、MIT ライセンス
 - issue: 作る順番①〜⑥に対応する親 issue と、半日以内で終わる子 issue。子 issue には完了条件と確認方法（自動テスト / シミュレーター / 実機）を書く。`実機確認` ラベル、マイルストーン「11/8 提出」。日本語で書く
 - AI はこの Mac で auto mode ＋ `/goal` を使い、issue ごとに worktree → 実装 → テスト → PR → テスト通過で自動マージ。`実機確認` の issue は止めてユーザーのチェックを待つ
 - ユーザーは毎日1時間、AI が用意した実機チェックリストを iPad で確認する。初日は最大のリスク（日本語の音声認識、割り込み時のエコー）から確認する

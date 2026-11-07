@@ -31,7 +31,7 @@ export const TYPESAFE_URL = "https://api.typesafe.ai/v1/systemone";
 export const AZURE_DEFAULT_REGION = "japaneast";
 export const AZURE_DEFAULT_VOICE = "ja-JP-NanamiNeural";
 export const AZURE_OUTPUT_FORMAT = "audio-24khz-48kbitrate-mono-mp3";
-export const AZURE_USER_AGENT = "ai-home-teacher-worker";
+export const AZURE_USER_AGENT = "chalktalk-worker";
 
 export function azureTtsUrl(region: string): string {
   return `https://${encodeURIComponent(region)}.tts.speech.microsoft.com/cognitiveservices/v1`;

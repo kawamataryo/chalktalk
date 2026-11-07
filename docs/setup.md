@@ -12,6 +12,8 @@ cd worker && npm ci
 npx wrangler d1 create ai-home-teacher
 ```
 
+アプリの名前は ChalkTalk に変えたが、本番の Worker（`ai-home-teacher-worker`）と D1（`ai-home-teacher`）の名前は、URL とデータを切らないよう元のままにしている。
+
 出力された `database_id` を `worker/wrangler.jsonc` の `REPLACE_WITH_DATABASE_ID` に書く（秘密情報ではない）。
 
 ```bash

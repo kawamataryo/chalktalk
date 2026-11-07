@@ -114,9 +114,9 @@ const Layout: FC<{ title: string; children?: Child }> = ({ title, children }) =>
 );
 
 export const LoginPage: FC<{ message?: string }> = ({ message }) => (
-  <Layout title="ログイン｜AI家庭教師">
+  <Layout title="ログイン｜ChalkTalk">
     <div class="center">
-      <h1>AI家庭教師 ダッシュボード</h1>
+      <h1>ChalkTalk ダッシュボード</h1>
       <p class="small">保護者の Google アカウントでログインしてください。</p>
       {message && <p style="color: var(--warn); font-weight: 700">{message}</p>}
       <p>
@@ -147,7 +147,7 @@ export const DashboardPage: FC<{
   const week = days.slice(-7).reduce((sum, d) => sum + d.minutes, 0);
   const todayMinutes = days.find((d) => d.day === today)?.minutes ?? 0;
   return (
-    <Layout title="学習のようす｜AI家庭教師">
+    <Layout title="学習のようす｜ChalkTalk">
       <header>
         <h1>学習のようす</h1>
         <div class="who">

@@ -1,4 +1,4 @@
-# 仕様書：AI家庭教師（仮）
+# 仕様書：ChalkTalk
 
 > 背景と決定の経緯は [vision.md](vision.md)、技術調査は [research-2026-11-03.md](research-2026-11-03.md)、ハッカソン要項は [hackathon-guide.md](hackathon-guide.md)。
 
