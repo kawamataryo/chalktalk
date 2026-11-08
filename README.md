@@ -133,34 +133,8 @@ flowchart LR
 | **0/10 → 10/10** | オリジナルの10問で図が出た問題（改善前 → 改善後。図に答えが書かれたのは 0/10）［[記録](docs/boards-eval.md)］ |
 | **34% → 0%** | 先生の声が音声認識に混ざる割合（エコーキャンセルなし → あり） |
 
-## 審査員の方へ
+## 動かす
 
-本番の Worker につながる**審査員専用のトークン**を用意しています。URL とトークンは提出フォームの「審査員用リンク・アクセス用ログイン情報」の欄に書きました（リポジトリには置いていません）。
-
-### TestFlight で試す（おすすめ）
-
-iPad（iPadOS 26 以上）で、提出フォームに書いた TestFlight のリンクを開いてインストールしてください。トークンはアプリに入っているので、設定は要りません。「勉強スタート」を押して、「ねえ先生」と話しかけてください。
-
-### リポジトリから Xcode で動かす
-
-Mac と Xcode 26 以上、iPad の実機が必要です（マイク・カメラ・エコーキャンセルはシミュレーターでは動きません）。
-
-```bash
-brew install xcodegen
-cp ios/Config/Secrets.xcconfig.example ios/Config/Secrets.xcconfig
-```
-
-`ios/Config/Secrets.xcconfig` の `WORKER_BASE_URL` と `FAMILY_TOKEN` を、提出フォームに書いた値に書き換えます。`DEVELOPMENT_TEAM` には、ご自身の Apple ID のチーム ID を入れてください。
-
-```bash
-cd ios && xcodegen generate && open HomeTeacher.xcodeproj
-```
-
-Xcode で iPad を選んで実行します。
-
-審査員用のトークンには期限と 1 日の回数の上限があります。上限に達すると、先生は「ちょっと調子が悪いみたい」と言って端末の声で話します。翌日（日本時間）にまた使えます。
-
-## 自分の環境で動かす
 
 Worker・D1・Google ログイン・TTS を自分で用意する手順は [docs/setup.md](docs/setup.md) にあります。
 
