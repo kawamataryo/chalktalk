@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { resolveFamily } from "./auth";
 import { dashboard } from "./dashboard";
 import type { AppEnv } from "./env";
+import { consumeRelay } from "./quota";
 import { sync } from "./sync";
 import {
   ALLOWED_MODELS,
@@ -24,11 +25,24 @@ export type { Env } from "./env";
 const app = new Hono<AppEnv>();
 
 app.use("/v1/*", async (c, next) => {
-  const familyId = await resolveFamily(c.req.header("Authorization"), c.env);
-  if (!familyId) return c.json({ error: "unauthorized" }, 401);
-  c.set("familyId", familyId);
+  const family = await resolveFamily(c.req.header("Authorization"), c.env);
+  if (!family) return c.json({ error: "unauthorized" }, 401);
+  c.set("familyId", family.familyId);
+  c.set("dailyRelayLimit", family.dailyRelayLimit);
   await next();
 });
+
+// 外部の API を呼ぶ中継だけ、上限のある家族の回数を数える（同期 API は数えない）
+const RELAY_PATHS = ["/v1/claude", "/v1/tts", "/v1/tts/azure", "/v1/decide"];
+for (const path of RELAY_PATHS) {
+  app.use(path, async (c, next) => {
+    const limit = c.get("dailyRelayLimit");
+    if (limit != null && !(await consumeRelay(c.env.DB, c.get("familyId"), limit))) {
+      return c.json({ error: "daily limit reached" }, 429);
+    }
+    await next();
+  });
+}
 
 app.route("/v1", sync);
 app.route("/dashboard", dashboard);

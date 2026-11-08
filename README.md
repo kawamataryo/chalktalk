@@ -57,6 +57,33 @@ flowchart LR
 | 読み上げ | ElevenLabs（差し替え可能。使えないときは端末の声） |
 | サーバー | Cloudflare Workers ＋ D1、Google ログイン |
 
+## 審査員の方へ
+
+本番の Worker につながる**審査員専用のトークン**を用意しています。URL とトークンは提出フォームの「審査員用リンク・アクセス用ログイン情報」の欄に書きました（リポジトリには置いていません）。
+
+### TestFlight で試す（おすすめ）
+
+iPad（iPadOS 26 以上）で、提出フォームに書いた TestFlight のリンクを開いてインストールしてください。トークンはアプリに入っているので、設定は要りません。「勉強スタート」を押して、「ねえ先生」と話しかけてください。
+
+### リポジトリから Xcode で動かす
+
+Mac と Xcode 26 以上、iPad の実機が必要です（マイク・カメラ・エコーキャンセルはシミュレーターでは動きません）。
+
+```bash
+brew install xcodegen
+cp ios/Config/Secrets.xcconfig.example ios/Config/Secrets.xcconfig
+```
+
+`ios/Config/Secrets.xcconfig` の `WORKER_BASE_URL` と `FAMILY_TOKEN` を、提出フォームに書いた値に書き換えます。`DEVELOPMENT_TEAM` には、ご自身の Apple ID のチーム ID を入れてください。
+
+```bash
+cd ios && xcodegen generate && open HomeTeacher.xcodeproj
+```
+
+Xcode で iPad を選んで実行します。
+
+審査員用のトークンには期限と 1 日の回数の上限があります。上限に達すると、先生は「ちょっと調子が悪いみたい」と言って端末の声で話します。翌日（日本時間）にまた使えます。
+
 ## 動かす
 
 [docs/setup.md](docs/setup.md) を参照。iPad の実機（iOS 26 以上）が必要です（マイク・カメラ・エコーキャンセルはシミュレーターでは動きません）。
