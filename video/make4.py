@@ -291,6 +291,10 @@ def stat_frame(t, t0=0.4, td=1.8):
     d.text((x0 + 34, y0 + ch - 38), "出典：総務省「労働力調査」（労働政策研究・研修機構「専業主婦世帯と共働き世帯」）", font=C.jfont(3, 19), fill=(170, 178, 196))
     return img
 
+def fade_out(img, k):
+    if k >= 1: return img
+    a = img.getchannel("A").point(lambda v: int(v * max(0.0, k))); img.putalpha(a); return img
+
 class FnAnim:
     def __init__(self, fn): self.fn = fn
     def frame(self, t): return self.fn(t)
@@ -306,15 +310,15 @@ IPAD_AREA = (C.IPAD_X + 40, C.IPAD_X + C.IPAD_W - 40, C.IPAD_Y + C.IPAD_H - 34)
 T = dict(PARENT=5.6, Q=11.0, FAST=13.6, IF=16.9, PAUSE=20.4)
 INTRO_TXT = {"i_a": "小学5年の長男は、中学受検の勉強中です。", "i_b2": "共働きの、わが家。親は仕事で、そばにいられません。",
              "i_c": "わからない問題で、手が止まっても、聞ける人がいない。", "n1c": "もし、話しかけられる先生が、そばにいたら。"}
-INTRO_AT = {"i_a": 0.6, "i_b2": T["PARENT"] - 0.2, "i_c": 10.8, "n1c": T["IF"]}
+INTRO_AT = {"i_a": 0.6, "i_b2": T["PARENT"] - 0.2, "i_c": 11.5, "n1c": T["IF"]}
 intro_caps = []
 for k_, at_ in INTRO_AT.items():
     f_ = nv(k_, A / f"{k_}.mp3"); end_ = at_ + dur_of(f_) + 0.5
     if k_ == "n1c": end_ = T["PAUSE"] + 1.2
     intro_caps.append((caption(f"icap_{k_}", INTRO_TXT[k_], size=46) if os.environ.get("NARR", "n4") != "n4" else I2 / {"i_a": "c1.png", "i_b2": "c2.png", "i_c": "c3.png", "n1c": "c4.png"}[k_], at_ - 0.1, end_))
-seg(kind="frames", start=1, n=660, dur=22.0, layers=[*intro_caps, (caption("icap_time", "時間だけが、過ぎていく。", (200, 210, 230), size=40) if os.environ.get("NARR", "n4") != "n4" else I2 / "c3b.png", 14.8, 16.5),
+seg(kind="frames", start=1, n=660, dur=22.0, layers=[*intro_caps, 
     (I2 / "vig95.png", T["IF"] + 1.2, 99)],
-    anims=[(FnAnim(lambda t: stat_frame(t - 5.8) if 5.8 <= t < 10.6 else Image.new("RGBA", (W, H), (0, 0, 0, 0))), 0)],
+    anims=[(FnAnim(lambda t: fade_out(stat_frame(t - 5.8), (12.4 - t) / 0.5) if 5.8 <= t < 12.4 else Image.new("RGBA", (W, H), (0, 0, 0, 0))), 0)],
     voice=[(nv("i_a", A / "i_a.mp3"), 0.6), (nv("i_b2", N4 / "i_b2.mp3"), T["PARENT"] - 0.2), (nv("i_c", A / "i_c.mp3"), INTRO_AT["i_c"]), (nv("n1c", A / "n1c.mp3"), T["IF"])], fade_out=0.6)
 
 # 2. ロゴ
