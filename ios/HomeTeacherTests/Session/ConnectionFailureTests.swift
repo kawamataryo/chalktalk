@@ -9,6 +9,7 @@ struct ConnectionProblemTests {
         #expect(ConnectionProblem(WorkerError.http(status: 401, body: #"{"error":"unauthorized"}"#)) == .unauthorized)
         #expect(ConnectionProblem(WorkerError.http(status: 403, body: "")) == .unauthorized)
         #expect(ConnectionProblem(WorkerError.http(status: 502, body: "")) == .server)
+        #expect(ConnectionProblem(WorkerError.http(status: 429, body: #"{"error":"daily limit reached"}"#)) == .dailyLimit)
         #expect(ConnectionProblem(TeacherBrainError.api(type: "overloaded_error", message: "Overloaded")) == .server)
         #expect(ConnectionProblem(URLError(.notConnectedToInternet)) == .offline)
         #expect(ConnectionProblem(URLError(.cannotConnectToHost)) == .offline)
@@ -22,6 +23,7 @@ struct ConnectionProblemTests {
         #expect(ConnectionProblem.unauthorized.parentMessage.contains("FAMILY_TOKEN"))
         #expect(ConnectionProblem.notConfigured.parentMessage.contains("Secrets.xcconfig"))
         #expect(ConnectionProblem.offline.parentMessage.contains("Wi-Fi"))
+        #expect(ConnectionProblem.dailyLimit.parentMessage.contains("上限"))
     }
 
     @Test func 設定がなければ通信せずにすぐ失敗する() async {

@@ -109,3 +109,20 @@ F0 は 1 分に 20 リクエストまで。初回起動時に定型句（15 個�
    ```bash
    node scripts/generate_phrases.mjs
    ```
+
+## 審査員用のトークン（#176）
+
+わが家とは別の家族を作り、期限と 1 日の上限つきのトークンを発行する。トークンは標準出力にだけ出るので、提出フォームの審査員向けの欄にだけ書く（リポジトリ・issue・PR には書かない）。
+
+```bash
+cd worker && npx wrangler d1 migrations apply DB --remote
+```
+
+```bash
+node scripts/judge-token.mjs --expires 2026-12-31 --limit 300
+```
+
+- `--expires` は JST のその日の終わりまで有効。過ぎると 401
+- `--limit` は中継（`/v1/claude`・`/v1/tts`・`/v1/tts/azure`・`/v1/decide`）を 1 日に呼べる回数。超えると 429（JST の 0 時に戻る）。同期 API は数えない
+- 作り直すと古いトークンは消える。審査が終わったら `node scripts/judge-token.mjs --revoke` で家族ごと消す
+- 最後の歯止めとして、Anthropic のコンソールで組織の月の利用上限も設定しておく

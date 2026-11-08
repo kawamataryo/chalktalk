@@ -24,5 +24,5 @@ export type Env = {
 export type AppEnv = {
   Bindings: Env;
   // 認証ミドルウェアが家族トークンから解決した家族の id
-  Variables: { familyId: string };
+  Variables: { familyId: string; dailyRelayLimit: number | null };
 };

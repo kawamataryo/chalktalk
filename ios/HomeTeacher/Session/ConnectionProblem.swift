@@ -9,6 +9,8 @@ enum ConnectionProblem: Equatable, Sendable {
     case unauthorized
     /// インターネットにつながっていない
     case offline
+    /// 1 日に使える回数を超えた（429。審査員用のトークンなど、上限のある家族。#176）
+    case dailyLimit
     /// Worker / Claude のエラー（5xx・overloaded など）
     case server
     /// 返事が来ない・遅すぎる
@@ -21,6 +23,8 @@ enum ConnectionProblem: Equatable, Sendable {
             self = .notConfigured
         case WorkerError.http(let status, _) where status == 401 || status == 403:
             self = .unauthorized
+        case WorkerError.http(429, _):
+            self = .dailyLimit
         case WorkerError.http(let status, _) where status >= 500:
             self = .server
         case is TeacherBrainError:
@@ -46,9 +50,11 @@ enum ConnectionProblem: Equatable, Sendable {
         case .notConfigured:
             "Worker の設定がありません。Secrets.xcconfig に WORKER_BASE_URL と FAMILY_TOKEN を書いて、ビルドし直してください。今は端末の声だけで動いています。"
         case .unauthorized:
-            "家族トークンが Worker と合っていません（401）。Secrets.xcconfig の FAMILY_TOKEN を、Worker の FAMILY_TOKEN と同じにしてビルドし直してください。"
+            "家族トークンが Worker と合っていないか、期限が切れています（401）。Secrets.xcconfig の FAMILY_TOKEN を、Worker の FAMILY_TOKEN と同じにしてビルドし直してください。"
         case .offline:
             "インターネットにつながっていません。Wi-Fi を確かめてください。"
+        case .dailyLimit:
+            "今日使える回数の上限に達しました（429）。日本時間の 0 時を過ぎると、また使えます。今は端末の声だけで動いています。"
         case .server:
             "先生のサーバー（Worker / Claude）の調子が悪いようです。少し待ってから話しかけてください。"
         case .timeout:
