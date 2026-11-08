@@ -12,6 +12,8 @@ import UIKit
 @Observable
 final class WatchOverSelfTest {
     static var isEnabled: Bool { ProcessInfo.processInfo.arguments.contains("-autoWatch") }
+    /// `-autoWatchDemo`：同じ流れを、ふだんのセッション画面で流す（デモ動画の撮影用。記録は Documents/session-selftest.txt）
+    static var isDemoEnabled: Bool { ProcessInfo.processInfo.arguments.contains("-autoWatchDemo") }
 
     /// 自己テスト用に短くした見守りの設定
     static let configuration = StallDetector.Configuration(stallAfter: .seconds(6), awayAfter: .seconds(4), returnAfter: .seconds(1))
@@ -124,6 +126,14 @@ final class WatchOverSelfTest {
     private func record(_ message: String) {
         lines.append(message)
         print("WATCH_SELFTEST \(message)")
+        if Self.isDemoEnabled, let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appending(path: "session-selftest.txt") {
+            if !FileManager.default.fileExists(atPath: url.path) { try? Data().write(to: url) }
+            if let handle = try? FileHandle(forWritingTo: url) {
+                handle.seekToEndOfFile()
+                handle.write(Data("\(SessionSelfTest.timestamp(Date())) \(message)\n".utf8))
+                try? handle.close()
+            }
+        }
     }
 }
 
@@ -156,6 +166,19 @@ final class SyntheticActivityWatcher: ActivityWatching {
 @MainActor
 final class SelfTestNudgeJudge: NudgeJudging {
     func shouldSpeakUp(_ context: NudgeContext) async -> Bool { true }
+}
+
+/// 見守りの自己テストを、ふだんのセッション画面で流す（`-autoWatchDemo`）
+struct WatchOverSelfTestDemoView: View {
+    @State private var test: WatchOverSelfTest
+
+    init(services: AppServices) {
+        _test = State(initialValue: WatchOverSelfTest(services: services))
+    }
+
+    var body: some View {
+        SessionScreen(model: test.model, watchTest: test)
+    }
 }
 
 struct WatchOverSelfTestView: View {

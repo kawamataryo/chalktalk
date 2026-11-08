@@ -289,6 +289,7 @@ final class StudySessionCoordinator {
 
         await syncBeforeStart()
         parentMessage = await deps.parentMessages?.nextParentMessage()
+        if parentMessage == nil { parentMessage = SessionSelfTest.demoParentMessage }
 
         let systemPrompt: String
         do {
@@ -381,7 +382,7 @@ final class StudySessionCoordinator {
         guard let message = parentMessage else { return }
         parentMessage = nil
         let told = !failed && outcome == .completed && spoken.joined().contains(message.senderLabel)
-        if told {
+        if told, message.id != "demo-video" {
             await deps.parentMessages?.markParentMessageTold(id: message.id, at: deps.now())
         }
         trace(told ? "親の伝言を伝えた: \(message.id)" : "親の伝言を伝えられなかった（次のセッションに残す）: \(message.id)")

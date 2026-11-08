@@ -51,6 +51,15 @@ final class SessionSelfTest {
         "ねえ先生、きのうサッカーしたんだ",
     ]
     static var usesResearchScript: Bool { ProcessInfo.processInfo.arguments.contains("-researchScript") }
+
+    /// 起動引数 `-demoParentMessage "<呼び方>|<本文>"`：デモ動画の撮影用。本番のダッシュボードを通さず、端末の中だけで親の伝言を渡す
+    static var demoParentMessage: ParentMessage? {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-demoParentMessage"), i + 1 < args.count else { return nil }
+        let parts = args[i + 1].split(separator: "|", maxSplits: 1).map(String.init)
+        guard parts.count == 2 else { return nil }
+        return ParentMessage(id: "demo-video", senderLabel: parts[0], body: parts[1], createdAt: Date())
+    }
     static let endCommand = "終わり"
 
     /// 答えを言う台本（#73）の問題。撮影のかわりに、この分析の結果を入れてから始める

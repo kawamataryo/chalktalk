@@ -14,6 +14,8 @@ struct ContentView: View {
             NavigationStack { AvatarGalleryView() }
         } else if SpeechSpikeModel.isAutoRun {
             NavigationStack { SpeechSpikeView() }
+        } else if WatchOverSelfTest.isDemoEnabled {
+            WatchOverSelfTestDemoView(services: services)
         } else if WatchOverSelfTest.isEnabled {
             WatchOverSelfTestView(services: services)
         } else if SessionSelfTest.isDemoEnabled {
