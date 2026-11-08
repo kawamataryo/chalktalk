@@ -608,16 +608,20 @@ P0 = Vector((2.2, 3.72, 0))  # 親は右に座り、左のパソコンを見る�
 def p(x, y, z): return tuple(P0 + Vector((x, y, z)))
 box("pchair", p(0.02, 0, 0.45), (0.4, 0.4, 0.04), M["walnut"], bevel=0.008)
 box("pchair_b", p(0.2, 0, 0.75), (0.03, 0.38, 0.5), M["walnut"], bevel=0.008)
-pu_pts = [p(0.02, 0, 0.52), p(0.0, 0, 0.7), p(-0.04, 0, 0.88), p(-0.06, 0, 1.02),
-          p(-0.04, -0.17, 0.98), p(-0.22, -0.18, 0.8), p(-0.42, -0.1, 0.77),
-          p(-0.04, 0.17, 0.98), p(-0.22, 0.18, 0.8), p(-0.42, 0.1, 0.77)]
-pu_r = [(0.13, 0.17), (0.13, 0.17), (0.13, 0.19), (0.06, 0.06), (0.06, 0.06), (0.05, 0.05), (0.042, 0.042), (0.06, 0.06), (0.05, 0.05), (0.042, 0.042)]
-skin_body("parent_upper", pu_pts, up_edges, pu_r, M["shirt"], wrinkle=0.004)
+# 親の体：胴と首。腕は別の物体（子どもと同じ。分かれ目のあるスキンは Blender 5.2 で崩れる）
+pu_pts = [p(0.02, 0, 0.52), p(0.0, 0, 0.7), p(-0.04, 0, 0.88), p(-0.06, 0, 1.02)]
+pu_r = [(0.13, 0.17), (0.13, 0.17), (0.13, 0.19), (0.06, 0.06)]
+skin_body("parent_upper", pu_pts, [(0, 1), (1, 2), (2, 3)], pu_r, M["shirt"], wrinkle=0.004)
+for sgn in (-1, 1):
+    arm = [(-0.03, sgn * 0.13, 0.97, 0.058), (-0.05, sgn * 0.18, 0.93, 0.056), (-0.15, sgn * 0.2, 0.83, 0.05),
+           (-0.24, sgn * 0.18, 0.78, 0.046), (-0.36, sgn * 0.13, 0.775, 0.04), (-0.43, sgn * 0.11, 0.775, 0.036)]
+    skin_body(f"parent_arm{sgn}", [p(x_, y_, z_) for x_, y_, z_, r_ in arm], [(j, j + 1) for j in range(len(arm) - 1)],
+              [(r_, r_ * 0.95) for *_, r_ in arm], M["shirt"], wrinkle=0.003)
 pl_pts = [p(0.02, 0, 0.52), p(0.0, -0.09, 0.5), p(-0.36, -0.09, 0.5), p(-0.38, -0.09, 0.07), p(-0.48, -0.09, 0.03),
           p(0.0, 0.09, 0.5), p(-0.36, 0.09, 0.5), p(-0.38, 0.09, 0.07), p(-0.48, 0.09, 0.03)]
 skin_body("parent_lower", pl_pts, lo_edges, [0.13, 0.085, 0.065, 0.05, 0.045, 0.085, 0.065, 0.05, 0.045], M["pants"])
 for s in (-1, 1):
-    sphere("p_hand", p(-0.45, s * 0.09, 0.775), 0.035, M["skin"], scale=(1.2, 0.9, 0.6))
+    sphere("p_hand", p(-0.445, s * 0.108, 0.775), 0.034, M["skin"], scale=(1.35, 0.85, 0.5))
 sphere("p_neck", p(-0.06, 0, 1.06), 0.05, M["skin"])
 ph = sphere("p_head", p(-0.08, 0, 1.18), 0.1, M["skin"], scale=(1.05, 0.92, 1.1), seg=96)
 phb = sphere("p_hairbase", p(-0.06, 0, 1.2), 0.106, M["phair"], scale=(1.05, 0.95, 1.08), seg=96)
@@ -629,7 +633,7 @@ box("lap_base", (1.62, 3.75, 0.745), (0.31, 0.22, 0.012), M["alu"], bevel=0.004)
 lid = box("lap_lid", (1.47, 3.75, 0.85), (0.008, 0.22, 0.2), M["alu"], bevel=0.004, rot=(0, math.radians(-12), 0))
 bpy.ops.mesh.primitive_plane_add(size=1, location=(1.4755, 3.75, 0.85), rotation=(0, math.radians(90 - 12), 0))
 lsc = bpy.context.object; lsc.scale = (0.18, 0.2, 1); lsc.data.materials.append(M["laptop_screen"])
-cyl("mug2", (1.98, 3.55, 0.79), 0.035, 0.09, M["mug"], verts=48, bevel=0.003)
+cyl("mug2", (1.86, 3.98, 0.79), 0.035, 0.09, M["mug"], verts=48, bevel=0.003)
 bpy.ops.object.light_add(type="AREA", location=(1.55, 3.75, 0.95))
 lpl = bpy.context.object; lpl.data.size = 0.25; lpl.data.color = srgb("#cfe2ff"); lpl.rotation_euler = (0, math.radians(-90), 0)
 bpy.ops.object.light_add(type="AREA", location=(1.8, 3.7, 2.6))

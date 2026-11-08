@@ -329,12 +329,12 @@ seg(kind="logo", dur=max(6.6, 3.0 + dur_of(nv("logo", A / "logo.mp3")) + 0.4), n
 tk = Talk((150, 1770, 1030))
 tk.kid(0.4, "ねえ先生、ただいま！", N4 / "kid_tadaima.mp3")
 tk.teacher(2.58, "おかえり！", dur_of(A / "session" / "000.mp3"))
-seg(kind="frames", start=661, n=225, dur=max(9.0, 3.8 + dur_of(nv("ipad2", N4 / "ipad2.mp3")) + 0.4), talk=tk, crop=(286, 215, 1477, 831), layers=[(caption("cap_ipad", "iPad に話しかけるだけ。そばで一緒にがんばる、勉強の相棒です。", (255, 226, 150), y=950), 3.8, 99)],
+seg(kind="frames", start=661, n=330, dur=max(9.0, 3.8 + dur_of(nv("ipad2", N4 / "ipad2.mp3")) + 1.0), talk=tk, crop=(286, 215, 1477, 831), layers=[(caption("cap_ipad", "iPad に話しかけるだけ。そばで一緒にがんばる、勉強の相棒です。", (255, 226, 150), y=950), 3.8, 99)],
     voice=[(N4 / "kid_tadaima.mp3", 0.4), (A / "session" / "000.mp3", 2.58), (nv("ipad2", N4 / "ipad2.mp3"), 3.8)], fade_out=0.4)
 
 def fcard(no, title, sub, voice):
     num, ttl, sb, ln = feature_card_layers(no, title, sub)
-    seg(kind="fcard", dur=max(2.9, dur_of(voice) + 1.5), layers=[(num, 0.3, "wipe"), (ln, 0.7, "wipe"), (ttl, 0.55, "up"), (sb, 0.9, "up")], voice=[(voice, 0.6)])
+    seg(kind="fcard", dur=max(3.9, dur_of(voice) + 2.5), layers=[(num, 0.5, "wipe"), (ln, 0.9, "wipe"), (ttl, 0.75, "up"), (sb, 1.1, "up")], voice=[(voice, 0.9)])
 
 def clip(src, t_in, t_out, pnl, kids=(), extra=(), layers=(), teachers=None, who="ムニ先生", note_layer=True):
     """録画の一部。kids の子どもの発話（録画の時刻）で、声の長さだけ画面を止める"""
@@ -438,7 +438,7 @@ def parent_note_card():
 p7 = panel("p7", 7, "親とつながる", ["親の伝言を、先生が勉強の始めに伝える"], image=parent_note_card())
 clip("message", 11.7, 18.3, p7)
 T_PRIV = max(4.5, 0.6 + dur_of(nv("n8", N4 / "n8.mp3")) + 0.4)  # 今夜の声かけを言い終えてから、プライバシーの話
-seg(kind="dash", dur=T_PRIV + dur_of(nv("npriv2", N4 / "npriv.mp3")) + 1.2, t_priv=T_PRIV, voice=[(nv("n8", N4 / "n8.mp3"), 0.6), (nv("npriv2", N4 / "npriv.mp3"), T_PRIV)],
+seg(kind="dash", dur=T_PRIV + dur_of(nv("npriv2", N4 / "npriv.mp3")) + 2.0, t_priv=T_PRIV, voice=[(nv("n8", N4 / "n8.mp3"), 0.6), (nv("npriv2", N4 / "npriv.mp3"), T_PRIV)],
     panel=panel("p7b", 7, "親とつながる", ["今夜の声かけ", "自分で解けるようになってきた変化", "週のまとめ"]))
 def privacy_layer():
     """プライバシー：先生が覚えていること（親が消せる）＋ 守っていること"""
@@ -463,11 +463,11 @@ q = [text_layer("q0", [("使ってみた長男（小5）の感想", C.jfont(6, 3
      text_layer("q2", [("「宇宙の話とかもできた」", C.maru(60), (250, 248, 240, 255), "c", 500, False)]),
      text_layer("q3", [("「ちょっと間違えることもあるけど、", C.maru(60), (250, 248, 240, 255), "c", 640, False),
                        ("それも可愛い」", C.maru(60), (250, 248, 240, 255), "c", 730, False)])]
-seg(kind="card", bg="board", dur=7.2, layers=[(q[0], 0.2, "fade"), (q[1], 1.4, "up"), (q[2], 3.0, "up"), (q[3], 4.6, "up")], voice=[(nv("kidq", N4 / "kidq.mp3"), 0.2)])
+seg(kind="card", bg="board", dur=8.3, layers=[(q[0], 0.2, "fade"), (q[1], 1.4, "up"), (q[2], 3.0, "up"), (q[3], 4.6, "up")], voice=[(nv("kidq", N4 / "kidq.mp3"), 0.2)])
 # 締め
 close_layer = text_layer("close", [("一人じゃない勉強を、どの家庭にも。", C.maru(46), (255, 236, 190, 255), "c", 130, False)])
 T_CLOSE_B = 0.5 + dur_of(nv("close_a", N4 / "close.mp3")) + 0.7
-seg(kind="logo", dur=T_CLOSE_B + dur_of(nv("logo", A / "logo.mp3")) + 1.0, name=name, bub=bub, tag=tag, card=card, lx=lx, lw=lw,
+seg(kind="logo", dur=T_CLOSE_B + dur_of(nv("logo", A / "logo.mp3")) + 0.6, name=name, bub=bub, tag=tag, card=card, lx=lx, lw=lw,
     voice=[(nv("close_a", N4 / "close.mp3"), 0.5), (nv("logo", A / "logo.mp3"), T_CLOSE_B)], end=True, close=close_layer)
 
 # ---------- 書き出し ----------
