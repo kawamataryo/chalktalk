@@ -57,6 +57,6 @@ Talk は声で話すこと、Chalk は黒板のこと。
 ## リンク
 
 - リポジトリ：https://github.com/kawamataryo/chalktalk
-- デモ動画（2分53秒）：https://github.com/kawamataryo/chalktalk/blob/main/docs/demo/demo.mp4
+- デモ動画（2分58秒）：https://youtu.be/4HfuuQG-leA（同じ動画をリポジトリの docs/demo/demo.mp4 にも置いている）
   - 本番の Worker につないだ実際のアプリの画面を録画し、先生の声（本番と同じ ElevenLabs の声）を話し始めの時刻に合わせて重ねたもの。子どもの台詞は台本、先生の返事は本番の Claude
   - iPad の実機で撮り直したら、このファイルを差し替える

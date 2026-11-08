@@ -17,7 +17,9 @@
 
 <img src="docs/readme/board-tour.gif" alt="先生が話に合わせて黒板に手順カード・帯図・表・三角形を1つずつ描いていく様子" width="720">
 
-▶️ **[デモ動画（2分53秒）を見る](docs/demo/demo.mp4)**
+[![ChalkTalk デモ動画（YouTube・2分58秒）](https://img.youtube.com/vi/4HfuuQG-leA/maxresdefault.jpg)](https://youtu.be/4HfuuQG-leA)
+
+▶️ **[デモ動画（2分58秒）を YouTube で見る](https://youtu.be/4HfuuQG-leA)**
 
 </div>
 
