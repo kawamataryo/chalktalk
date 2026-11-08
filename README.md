@@ -133,6 +133,37 @@ flowchart LR
 | **0/10 → 10/10** | オリジナルの10問で図が出た問題（改善前 → 改善後。図に答えが書かれたのは 0/10）［[記録](docs/boards-eval.md)］ |
 | **34% → 0%** | 先生の声が音声認識に混ざる割合（エコーキャンセルなし → あり） |
 
+## 審査員の方へ
+
+本番の Worker につながる**審査員専用のトークン**（期限と 1 日の回数の上限つき）を、提出フォームの「審査員用リンク・アクセス用ログイン情報」の欄に書きました。ログインは不要です。
+
+### TestFlight で試す（おすすめ）
+
+iPad（iPadOS 26 以上）で [TestFlight の公開リンク](https://testflight.apple.com/join/GCAsB6Fv) を開いてインストールしてください。トークンはアプリに入っているので、設定は要りません。「勉強スタート」を押して、「ねえ先生」と話しかけてください。
+
+### リポジトリから Xcode で動かす
+
+Mac と Xcode 26 以上、iPad の実機が必要です（マイク・カメラ・エコーキャンセルはシミュレーターでは動きません）。
+
+```bash
+brew install xcodegen
+cp ios/Config/Secrets.xcconfig.example ios/Config/Secrets.xcconfig
+```
+
+`ios/Config/Secrets.xcconfig` を次のように書き換えます。`FAMILY_TOKEN` は提出フォームに書いたトークン、`DEVELOPMENT_TEAM` はご自身の Apple ID のチーム ID です。
+
+```
+WORKER_BASE_URL = https:/$()/ai-home-teacher-worker.ba068082.workers.dev
+FAMILY_TOKEN = （提出フォームに書いたトークン）
+DEVELOPMENT_TEAM = （ご自身のチーム ID）
+```
+
+```bash
+cd ios && xcodegen generate && open HomeTeacher.xcodeproj
+```
+
+Xcode で iPad を選んで実行します。1 日の上限に達すると、先生は「ちょっと調子が悪いみたい」と言って端末の声で話します（日本時間の 0 時に戻ります）。
+
 ## 動かす
 
 
