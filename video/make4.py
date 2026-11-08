@@ -28,6 +28,11 @@ KID_C, KID_BG = (214, 92, 24), (255, 245, 236)
 MUNI_C = (104, 98, 196)
 SPEAKER = {"session": "ムニ先生", "board": "ムニ先生", "research": "ムニ先生", "watch": "ムニ先生", "message": "ムニ先生"}
 
+NARR_DIR = A / os.environ.get("NARR", "n4")  # ナレーションの声（n4: Azure の仮、n5: ElevenLabs）
+def nv(key, fallback):
+    p = NARR_DIR / f"{key}.mp3"
+    return p if p.exists() else fallback
+
 def run(cmd):
     r = subprocess.run([str(c) for c in cmd], capture_output=True, text=True)
     if r.returncode: print(r.stderr[-3000:]); raise SystemExit(1)
@@ -299,22 +304,29 @@ IPAD_AREA = (C.IPAD_X + 40, C.IPAD_X + C.IPAD_W - 40, C.IPAD_Y + C.IPAD_H - 34)
 
 # 1. 導入（Blender 0〜22 秒）
 T = dict(PARENT=5.6, Q=11.0, FAST=13.6, IF=16.9, PAUSE=20.4)
-seg(kind="frames", start=1, n=660, dur=22.0, layers=[
-    (I2 / "c1.png", 0.6, 4.9), (I2 / "c2.png", T["PARENT"] - 0.2, 10.2), (I2 / "c3.png", 10.7, 13.4),
-    (I2 / "c3b.png", 13.6, 16.4), (I2 / "c4.png", T["IF"], T["PAUSE"] + 1.2), (I2 / "vig95.png", T["IF"] + 1.2, 99)],
+INTRO_TXT = {"i_a": "小学5年の長男は、中学受検の勉強中です。", "i_b2": "共働きの、わが家。親は仕事で、そばにいられません。",
+             "i_c": "わからない問題で、手が止まっても、聞ける人がいない。", "n1c": "もし、話しかけられる先生が、そばにいたら。"}
+INTRO_AT = {"i_a": 0.6, "i_b2": T["PARENT"] - 0.2, "i_c": 10.8, "n1c": T["IF"]}
+intro_caps = []
+for k_, at_ in INTRO_AT.items():
+    f_ = nv(k_, A / f"{k_}.mp3"); end_ = at_ + dur_of(f_) + 0.5
+    if k_ == "n1c": end_ = T["PAUSE"] + 1.2
+    intro_caps.append((caption(f"icap_{k_}", INTRO_TXT[k_], size=46) if os.environ.get("NARR", "n4") != "n4" else I2 / {"i_a": "c1.png", "i_b2": "c2.png", "i_c": "c3.png", "n1c": "c4.png"}[k_], at_ - 0.1, end_))
+seg(kind="frames", start=1, n=660, dur=22.0, layers=[*intro_caps, (caption("icap_time", "時間だけが、過ぎていく。", (200, 210, 230), size=40) if os.environ.get("NARR", "n4") != "n4" else I2 / "c3b.png", 14.8, 16.5),
+    (I2 / "vig95.png", T["IF"] + 1.2, 99)],
     anims=[(FnAnim(lambda t: stat_frame(t - 5.8) if 5.8 <= t < 10.6 else Image.new("RGBA", (W, H), (0, 0, 0, 0))), 0)],
-    voice=[(A / "i_a.mp3", 0.6), (N4 / "i_b2.mp3", T["PARENT"] - 0.2), (A / "i_c.mp3", 10.8), (A / "n1c.mp3", T["IF"] + 0.1)], fade_out=0.6)
+    voice=[(nv("i_a", A / "i_a.mp3"), 0.6), (nv("i_b2", N4 / "i_b2.mp3"), T["PARENT"] - 0.2), (nv("i_c", A / "i_c.mp3"), INTRO_AT["i_c"]), (nv("n1c", A / "n1c.mp3"), T["IF"])], fade_out=0.6)
 
 # 2. ロゴ
 name, bub, tag, card, lx, lw = logo_layers()
-seg(kind="logo", dur=6.6, name=name, bub=bub, tag=tag, card=card, lx=lx, lw=lw, voice=[(A / "i_e.mp3", 0.3), (A / "logo.mp3", 3.0)])
+seg(kind="logo", dur=max(6.6, 3.0 + dur_of(nv("logo", A / "logo.mp3")) + 0.4), name=name, bub=bub, tag=tag, card=card, lx=lx, lw=lw, voice=[(nv("i_e", A / "i_e.mp3"), 0.3), (nv("logo", A / "logo.mp3"), 3.0)])
 
 # 3. iPad の紹介（Blender 22〜29.5 秒）：子どもが話しかける → iPad が光ってあいさつ
 tk = Talk((150, 1770, 1030))
 tk.kid(0.4, "ねえ先生、ただいま！", N4 / "kid_tadaima.mp3")
 tk.teacher(2.58, "おかえり！", dur_of(A / "session" / "000.mp3"))
-seg(kind="frames", start=661, n=225, dur=9.0, talk=tk, crop=(286, 215, 1477, 831), layers=[(caption("cap_ipad", "話しかけるだけ。そばで一緒にがんばる、勉強の相棒。", (255, 226, 150), y=950), 3.8, 99)],
-    voice=[(N4 / "kid_tadaima.mp3", 0.4), (A / "session" / "000.mp3", 2.58), (N4 / "ipad2.mp3", 3.8)], fade_out=0.4)
+seg(kind="frames", start=661, n=225, dur=max(9.0, 3.8 + dur_of(nv("ipad2", N4 / "ipad2.mp3")) + 0.4), talk=tk, crop=(286, 215, 1477, 831), layers=[(caption("cap_ipad", "iPad に話しかけるだけ。そばで一緒にがんばる、勉強の相棒です。", (255, 226, 150), y=950), 3.8, 99)],
+    voice=[(N4 / "kid_tadaima.mp3", 0.4), (A / "session" / "000.mp3", 2.58), (nv("ipad2", N4 / "ipad2.mp3"), 3.8)], fade_out=0.4)
 
 def fcard(no, title, sub, voice):
     num, ttl, sb, ln = feature_card_layers(no, title, sub)
@@ -347,11 +359,11 @@ def clip(src, t_in, t_out, pnl, kids=(), extra=(), layers=(), teachers=None, who
         layers=lay, talk=talk, voice=voice)
 
 # 01 声で話せる
-fcard(1, "声で話せる", "画面に触らない。「ねえ先生」と話しかけるだけ", N4 / "f1.mp3")
+fcard(1, "声で話せる", "画面に触らない。「ねえ先生」と話しかけるだけ", nv("f1", N4 / "f1.mp3"))
 p1 = panel("p1", 1, "声で話せる", ["画面に触らず、話しかけるだけ", "わからない言葉も、その場で聞ける"])
 clip("session", 32.5, 41.75, p1, kids=["ねえ先生、もとにする量ってなに？"])
 # 02 黒板で教える
-fcard(2, "黒板で教える", "話に合わせて、図を1つずつ書いていく", N4 / "f2.mp3")
+fcard(2, "黒板で教える", "話に合わせて、図を1つずつ書いていく", nv("f2", N4 / "f2.mp3"))
 p2 = panel("p2", 2, "黒板で教える", ["話しながら、黒板に図を書く", "線分図で「もとにする量」を見せる"])
 clip("session", 41.75, 47.7, p2)
 mont = []
@@ -363,18 +375,31 @@ for i_, fn in enumerate(tiles):
     sh = Image.new("RGBA", (W, H), (0, 0, 0, 0)); ImageDraw.Draw(sh).rounded_rectangle((x + 4, y + 12, x + im.width + 4, y + im.height + 12), 16, fill=(0, 0, 0, 60))
     lay = Image.alpha_composite(lay, sh.filter(ImageFilter.GaussianBlur(10))); lay.paste(im, (x, y))
     pth = L / f"mont{i_}.png"; lay.save(pth); mont.append((pth, 0.5 + i_ * 0.75, "up"))
+WJ = NARR_DIR / "words.json"
+if WJ.exists():
+    ws = json.loads(WJ.read_text())["nm"]; txt = "".join(w["w"] for w in ws)
+    def at_word(word):
+        i0 = txt.find(word); n_ = 0
+        for w in ws:
+            if n_ >= i0: return w["t"]
+            n_ += len(w["w"])
+        return None
+    for j_, word in enumerate(["数直線", "面積", "グラフ", "メダカ", "植物", "回路"]):
+        t_ = at_word(word)
+        if t_ is not None: mont[j_] = (mont[j_][0], round(0.3 + t_ - 0.15, 2), "up")
+    print("montage at", [m_[1] for m_ in mont])
 hm = text_layer("hm", [("決まった図も、自由な絵も", C.maru(52), C.INK + (255,), 150, 70, False),
                        ("決まった図：数直線・面積図・グラフ・線分図・ベン図・表 など11種類", C.jfont(6, 26), C.MUTED + (255,), 154, 150, False),
                        ("自由に描く：どんな形も、線と曲線で描ける（いちばん新しい機能）", C.jfont(6, 26), (46, 125, 106, 255), 154, 190, False)])
 rowlab = text_layer("rowlab", [("決まった図", C.jfont(6, 26), (194, 140, 40, 255), 150, 258, False), ("自由に描く", C.jfont(6, 26), (46, 125, 106, 255), 150, 648, False)])
-seg(kind="card", bg="paper", dur=round(dur_of(N4 / "nm.mp3") + 0.9, 2), layers=[(hm, 0.1, "fade"), (rowlab, 0.4, "fade"), *mont], voice=[(N4 / "nm.mp3", 0.3)])
+seg(kind="card", bg="paper", dur=round(dur_of(nv("nm", N4 / "nm.mp3")) + 0.9, 2), layers=[(hm, 0.1, "fade"), (rowlab, 0.4, "fade"), *mont], voice=[(nv("nm", N4 / "nm.mp3"), 0.3)])
 # 03 答えは言わない。できたら、ほめる
-fcard(3, "答えは言わない", "まちがえても次のヒント。できたら、いっしょに喜ぶ", N4 / "f3.mp3")
+fcard(3, "答えは言わない", "まちがえても次のヒント。できたら、いっしょに喜ぶ", nv("f3", N4 / "f3.mp3"))
 p3 = panel("p3", 3, "答えは言わない。できたら、ほめる", ["「おしい、いいところまで来てるよ」", "最後のひと言は子どもが言う"])
 clip("session", 75.2, 79.0, p3, kids=["ねえ先生、じゃあ10平方センチかな？"])
 clip("session", 88.5, 92.1, p3, kids=["ねえ先生、わかった！24平方センチだ！"])
 # 04 見守って、声をかける
-fcard(4, "見守って、声をかける", "手が止まったら、先生のほうから「どこか考え中？」", N4 / "f4.mp3")
+fcard(4, "見守って、声をかける", "手が止まったら、先生のほうから「どこか考え中？」", nv("f4", N4 / "f4.mp3"))
 p4 = panel("p4", 4, "見守って、声をかける", ["カメラで手の動きだけを見る（映像は送らず、保存もしない）", "止まったら、先生から声をかける", "「見て」でノートを読んでヒント"])
 eye = Image.new("RGBA", (W, H), (0, 0, 0, 0)); ed = ImageDraw.Draw(eye)
 ed.rounded_rectangle((128, 108, 520, 152), 22, fill=(46, 125, 106, 240)); ed.text((146, 115), "← 見守り中（手の動きだけを見る）", font=C.jfont(6, 22), fill=(255, 255, 255))
@@ -385,16 +410,16 @@ mt_ = Talk(IPAD_AREA); mt_.teacher(1.9, "ここまで書けたね！30と0.4、�
 seg(kind="mock", dur=7.3, panel=p4, talk=mt_, note=note("note_mock", "撮影からヒントまでは画面のイメージ（実機では「見て」でノートを撮って読む。Simulator にはカメラがないため）"),
     voice=[(N4 / "hint.mp3", 1.9)])
 # 05 自分の先生を選べる
-fcard(5, "自分の先生を選べる", "見た目も声も性格も違う8人", N4 / "f5.mp3")
+fcard(5, "自分の先生を選べる", "見た目も声も性格も違う8人", nv("f5", N4 / "f5.mp3"))
 p5 = panel("p5", 5, "自分の先生を選べる", ["触ると、その先生の声で自己紹介", "選ぶと、次の勉強からその先生に"])
-clip("picker2", 4.9, 12.1, p5, extra=[("rika_intro.mp3", 5.65, None, "おもしろくなってきたね！が口ぐせのリカだよ。実験に夢中で、お茶はいつも冷めちゃうんだ。", "リカ先生")], note_layer=False)
+# リカの自己紹介は、長さに収めるため外した（8人の一覧は画面に映る）
 clip("picker2", 19.4, 25.7, p5, extra=[("n4/boru_intro.mp3", 20.15, None, "ピピッと来たよ！ボルです。ほめ言葉を練習中で、合ってた？って聞いちゃうんだ。", "ボル先生")], note_layer=False)
 # 06 なんでも話せる
-fcard(6, "なんでも話せる", "好きな話にもつきあう。調べて、写真を見せる", N4 / "f6.mp3")
+fcard(6, "なんでも話せる", "好きな話にもつきあう。調べて、写真を見せる", nv("f6", N4 / "f6.mp3"))
 p6 = panel("p6", 6, "なんでも話せる", ["わからないことは調べて確かめる", "本物の写真を黒板に出す"])
 clip("research", 44.4, 51.6, p6, kids=["ねえ先生、オオカミってどんな見た目なの？写真見せて"])
 # 07 親とつながる
-fcard(7, "親とつながる", "伝言を先生が届ける。今夜の声かけが親に届く", N4 / "f7.mp3")
+fcard(7, "親とつながる", "伝言を先生が届ける。今夜の声かけが親に届く", nv("f7", N4 / "f7.mp3"))
 def parent_note_card():
     """親が書いた伝言（ダッシュボードの「先生にことづける」から）"""
     w = C.PANEL_W; im = Image.new("RGBA", (w, 300), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
@@ -408,7 +433,8 @@ def parent_note_card():
     return im
 p7 = panel("p7", 7, "親とつながる", ["親の伝言を、先生が勉強の始めに伝える"], image=parent_note_card())
 clip("message", 11.7, 18.6, p7)
-seg(kind="dash", dur=11.6, voice=[(N4 / "n8.mp3", 0.6), (N4 / "npriv.mp3", 4.5)],
+T_PRIV = max(4.5, 0.6 + dur_of(nv("n8", N4 / "n8.mp3")) + 0.4)  # 今夜の声かけを言い終えてから、プライバシーの話
+seg(kind="dash", dur=T_PRIV + dur_of(nv("npriv", N4 / "npriv.mp3")) + 0.5, t_priv=T_PRIV, voice=[(nv("n8", N4 / "n8.mp3"), 0.6), (nv("npriv", N4 / "npriv.mp3"), T_PRIV)],
     panel=panel("p7b", 7, "親とつながる", ["今夜の声かけ", "自分で解けるようになってきた変化", "週のまとめ"]))
 def privacy_layer():
     """プライバシー：先生が覚えていること（親が消せる）＋ 守っていること"""
@@ -433,10 +459,10 @@ q = [text_layer("q0", [("使ってみた長男（小5）の感想", C.jfont(6, 3
      text_layer("q2", [("「宇宙の話とかもできた」", C.maru(60), (250, 248, 240, 255), "c", 500, False)]),
      text_layer("q3", [("「ちょっと間違えることもあるけど、", C.maru(60), (250, 248, 240, 255), "c", 640, False),
                        ("それも可愛い」", C.maru(60), (250, 248, 240, 255), "c", 730, False)])]
-seg(kind="card", bg="board", dur=7.2, layers=[(q[0], 0.2, "fade"), (q[1], 1.4, "up"), (q[2], 3.0, "up"), (q[3], 4.6, "up")], voice=[(N4 / "kidq.mp3", 0.2)])
+seg(kind="card", bg="board", dur=7.2, layers=[(q[0], 0.2, "fade"), (q[1], 1.4, "up"), (q[2], 3.0, "up"), (q[3], 4.6, "up")], voice=[(nv("kidq", N4 / "kidq.mp3"), 0.2)])
 # 締め
 close_layer = text_layer("close", [("一人じゃない勉強を、どの家庭にも。", C.maru(46), (255, 236, 190, 255), "c", 130, False)])
-seg(kind="logo", dur=7.4, name=name, bub=bub, tag=tag, card=card, lx=lx, lw=lw, voice=[(N4 / "close.mp3", 0.5)], end=True, close=close_layer)
+seg(kind="logo", dur=max(7.4, 0.5 + dur_of(nv("close", N4 / "close.mp3")) + 0.6), name=name, bub=bub, tag=tag, card=card, lx=lx, lw=lw, voice=[(nv("close", N4 / "close.mp3"), 0.5)], end=True, close=close_layer)
 
 # ---------- 書き出し ----------
 def anim(base, k, t0, kind, t1=None, out_name=None):
@@ -448,7 +474,9 @@ def anim(base, k, t0, kind, t1=None, out_name=None):
         return f + f";[{base}][l{k}]overlay=x='if(lt(t,{t0 + d}),90*(1-clip((t-{t0})/{d},0,1)),0)':y=0[{o}]"
     return f + f";[{base}][l{k}]overlay=0:0[{o}]"
 
-ENC = ["-c:v", "libx264", "-preset", "veryfast", "-crf", "19", "-pix_fmt", "yuv420p", "-r", FPS, "-an"]
+FINAL = os.environ.get("FINAL") == "1"  # YouTube に上げる完成版：高画質、音量 -14 LUFS
+ENC = ["-c:v", "libx264", "-preset", "slow" if FINAL else "veryfast", "-crf", "16" if FINAL else "19", "-pix_fmt", "yuv420p", "-r", FPS,
+       "-profile:v", "high", "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709", "-an"]
 audio, files, Tg, audit = [], [], 0.0, []
 ONLY = os.environ.get("ONLY")
 for i, s in enumerate(segments):
@@ -549,7 +577,7 @@ for i, s in enumerate(segments):
                "-loop", "1", "-t", d, "-i", priv_layer, "-loop", "1", "-t", d, "-i", note("note_dash", "画面は見本のデータ")]
         fc = ["[0:v][1:v]overlay=120:'110-min(109,max(0,t-1.5)*14)'[a]", "[2:v]format=rgba,fade=in:st=0:d=0.5:alpha=1[fr]",
               "[a][fr]overlay=x='if(lt(t,0.5),-60*(1-t/0.5),0)':y=0[b]", anim("b", 3, 0.2, "slide", out_name="c"),
-              anim("c", 4, 4.4, "fade", out_name="c2"), f"[c2][5:v]overlay=0:0,fade=in:st=0:d=0.3:color={BG_HEX}[v]"]
+              anim("c", 4, s.get("t_priv", 4.5) - 0.1, "fade", out_name="c2"), f"[c2][5:v]overlay=0:0,fade=in:st=0:d=0.3:color={BG_HEX}[v]"]
         run(["ffmpeg", "-y", "-v", "error", *ins, "-filter_complex", ";".join(fc), "-map", "[v]", "-t", d, *ENC, out])
     for v in s.get("voice", []):
         audio.append((v[0], Tg + v[1], v[2] if len(v) > 2 else None))
@@ -571,7 +599,12 @@ for (i, kind, a, b, segend, nm) in sorted(audit, key=lambda x: x[2]):
 if ONLY: raise SystemExit(0)
 (OUT / "concat.txt").write_text("".join(f"file '{f}'\n" for f in files))
 run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", OUT / "concat.txt", "-c", "copy", OUT / "video.mp4"])
-subprocess.run([str(V / ".venv/bin/python"), str(V / "bgm.py"), f"{total:.3f}", str(A / "bgm4.wav")], check=True, capture_output=True)
+starts = []; acc = 0.0
+for s_ in segments: starts.append((acc, s_)); acc += s_["dur"]
+t_feat = next(a_ for a_, s_ in starts if s_["kind"] == "fcard")
+t_feed = next(a_ for a_, s_ in starts if s_["kind"] == "card" and s_.get("bg") == "board")
+t_end = [a_ for a_, s_ in starts if s_["kind"] == "logo"][-1]
+subprocess.run([str(V / ".venv/bin/python"), str(V / "bgm2.py"), f"{total:.3f}", str(A / "bgm4.wav"), "22.0", f"{t_feat:.2f}", f"{t_feed:.2f}", f"{t_end:.2f}"], check=True, capture_output=True)
 MUTE = [T["PAUSE"] - 0.6, 22.2]
 inputs, parts = ["-f", "lavfi", "-t", f"{total:.3f}", "-i", "anullsrc=r=48000:cl=stereo"], []
 for k, (f, at, cut) in enumerate(audio, start=1):
@@ -582,7 +615,7 @@ b = len(audio) + 1; inputs += ["-i", str(A / "bgm4.wav")]
 mix = ";".join(parts) + ";[0:a]" + "".join(f"[a{k}]" for k in range(1, b)) + \
       f"amix=inputs={b}:normalize=0:duration=first,asplit[voice][key];" + \
       f"[{b}:a]volume='0.22*max(clip(({MUTE[0]}-t)/0.6,0,1),clip((t-{MUTE[1]})/0.8,0,1))':eval=frame[bg];[bg][key]sidechaincompress=threshold=0.02:ratio=6:attack=20:release=400[duck];" + \
-      "[voice][duck]amix=inputs=2:normalize=0:duration=first,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000[out]"
-run(["ffmpeg", "-y", "-v", "error", *inputs, "-filter_complex", mix, "-map", "[out]", "-c:a", "aac", "-b:a", "160k", OUT / "audio.m4a"])
+      "[voice][duck]amix=inputs=2:normalize=0:duration=first,loudnorm=I=" + ("-14" if FINAL else "-16") + ":TP=-1.0:LRA=11,aresample=48000[out]"
+run(["ffmpeg", "-y", "-v", "error", *inputs, "-filter_complex", mix, "-map", "[out]", "-c:a", "aac", "-b:a", "320k" if FINAL else "160k", "-ar", "48000", OUT / "audio.m4a"])
 run(["ffmpeg", "-y", "-v", "error", "-i", OUT / "video.mp4", "-i", OUT / "audio.m4a", "-c:v", "copy", "-c:a", "copy", "-shortest", "-movflags", "+faststart", OUT / "chalktalk_promo.mp4"])
 print(f"total {total:.1f}s, audio clips {len(audio)} -> {OUT / 'chalktalk_promo.mp4'}")

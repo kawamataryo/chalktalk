@@ -50,7 +50,7 @@
 ### デモ動画
 
 - 作り方とスクリプトは `video/`（`video/README.md`）。録画・声・3D の連番は大きいのでリポジトリに入れない
-- 組み立て: `cd video && .venv/bin/python make4.py`（声とナレーションの時刻の確認表を `out4/audit.txt` に出す）
+- 組み立て: `cd video && FINAL=1 NARR=n6 FRAMES=frames3 .venv/bin/python make4.py`（声とナレーションの時刻の確認表を `out4/audit.txt` に出す）。ナレーションは `el_narr.py`（ElevenLabs）で作り、`verify` で読みを確かめる
 
 ### Worker
 
