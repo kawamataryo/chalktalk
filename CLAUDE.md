@@ -47,6 +47,11 @@
 - パーサーのテスト: `node --test scripts/*.test.mjs`
 - 先生の声は `Secrets.xcconfig` の `TTS_PROVIDER`（azure が既定 / elevenlabs）で切り替える。聞き比べ: `WORKER_BASE_URL=... FAMILY_TOKEN=... node scripts/compare_voices.mjs`
 
+### デモ動画
+
+- 作り方とスクリプトは `video/`（`video/README.md`）。録画・声・3D の連番は大きいのでリポジトリに入れない
+- 組み立て: `cd video && .venv/bin/python make4.py`（声とナレーションの時刻の確認表を `out4/audit.txt` に出す）
+
 ### Worker
 
 ```sh

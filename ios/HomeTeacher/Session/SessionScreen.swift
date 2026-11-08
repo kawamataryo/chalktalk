@@ -14,6 +14,8 @@ struct SessionScreen: View {
     var preview: SessionPreviewState?
     /// 台本の自己テストを画面で流す（起動引数 `-autoSessionDemo`）。あれば準備も自己テストに任せる
     var selfTest: SessionSelfTest?
+    /// `-autoWatchDemo`：見守りの自己テストを、この画面で流す（デモ動画の撮影用）
+    var watchTest: WatchOverSelfTest?
     @State private var showsDebugMenu = false
     /// 起動引数 `-showSettings` なら設定を開いた状態で始める（設定画面の表示確認用）
     @State private var showsSettings = ProcessInfo.processInfo.arguments.contains("-showSettings")
@@ -90,6 +92,8 @@ struct SessionScreen: View {
             }
             if let selfTest {
                 await selfTest.run()
+            } else if let watchTest {
+                await watchTest.run()
             } else if let preview {
                 await model.prepare(scriptedInput: ScriptedSpeechInput())
                 model.coordinator?.showPreview(preview)

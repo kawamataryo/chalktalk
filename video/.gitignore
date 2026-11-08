@@ -1,0 +1,14 @@
+# 録画・声・3D の連番・素材は大きいので入れない（作り方は README.md）
+.env
+.venv/
+raw/
+audio/
+out*/
+cards/
+montage/
+ph/
+blender/frames*/
+blender/*.png
+blender/*.blend
+blender/*.mp4
+blender/*.log
